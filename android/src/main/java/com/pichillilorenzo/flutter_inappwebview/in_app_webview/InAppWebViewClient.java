@@ -91,7 +91,14 @@ public class InAppWebViewClient extends WebViewClient {
       } else {
         // There isn't any way to load an URL for a frame that is not the main frame,
         // so if the request is not for the main frame, the navigation is allowed.
-        return request.isForMainFrame();
+        // [Jason] >>
+        // return request.isForMainFrame();
+        if (request.getUrl().toString().startsWith("intent://")) {
+          return true;
+        } else {
+          return request.isForMainFrame();
+        }
+        // <<
       }
     }
     return false;
@@ -154,7 +161,21 @@ public class InAppWebViewClient extends WebViewClient {
       @Override
       public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
         Log.e(LOG_TAG, errorCode + ", " + ((errorMessage != null) ? errorMessage : ""));
-        allowShouldOverrideUrlLoading(webView, url, headers, isForMainFrame);
+        // [Jason] - add intent error >>
+        // allowShouldOverrideUrlLoading(webView, url, headers, isForMainFrame);
+        
+        if (url.startsWith("intent://")) {
+          final Map<String, Object> obj = new HashMap<>();
+          obj.put("type", "intent");
+          obj.put("msg", errorMessage != null ? errorMessage : "");
+          obj.put("url", url);
+          webView.consoleMessage(obj);
+
+          allowShouldOverrideUrlLoading(webView, url, headers, false);
+        } else {
+          allowShouldOverrideUrlLoading(webView, url, headers, isForMainFrame);
+        }
+        // <<
       }
 
       @Override

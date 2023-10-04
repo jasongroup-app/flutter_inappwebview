@@ -280,6 +280,18 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         }
     }
 
+    // [Jason] - checked onScrollStopped >> 
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            self.onConsoleMessage(message: "onScrollStopped", messageLevel: 999)
+        }
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.onConsoleMessage(message: "onScrollStopped", messageLevel: 999)
+    }
+    // <<
+
     public func prepare() {
         scrollView.addGestureRecognizer(self.longPressRecognizer)
         scrollView.addGestureRecognizer(self.recognizerForDisablingContextMenuOnLinks)
@@ -470,6 +482,10 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         configuration.userContentController.add(self, name: "onWebMessagePortMessageReceived")
         configuration.userContentController.removeScriptMessageHandler(forName: "onWebMessageListenerPostMessageReceived")
         configuration.userContentController.add(self, name: "onWebMessageListenerPostMessageReceived")
+        // [Jason] >>
+        configuration.userContentController.removeScriptMessageHandler(forName: "Native")
+        configuration.userContentController.add(self, name: "Native")
+        // <<
         configuration.userContentController.addUserOnlyScripts(initialUserScripts)
         configuration.userContentController.sync(scriptMessageHandler: self)
     }
@@ -2801,6 +2817,22 @@ if(window.\(JAVASCRIPT_BRIDGE_NAME)[\(_callHandlerID)] != null) {
                 webMessageListener.onPostMessage(message: messageData, sourceOrigin: sourceOrigin, isMainFrame: isMainFrame)
             }
         }
+        // [Jaons] >>
+        else if message.name == "Native" {
+            let body = message.body as! [String: Any?]
+            let _callHandlerID: Int64 = 9999999999
+            let data = try? JSONSerialization.data(withJSONObject: body)
+            let args = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)! as String
+
+            var webView = self
+            let _windowId: Int64 = 9999999999
+            if let webViewTransport = InAppWebView.windowWebViews[_windowId] {
+                webView = webViewTransport.webView
+            }
+
+            webView.onConsoleMessage(message: args, messageLevel: 999)
+        }
+        // <<
     }
     
     public func findAllAsync(find: String?, completionHandler: ((Any?, Error?) -> Void)?) {
