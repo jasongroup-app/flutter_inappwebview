@@ -1,23 +1,21 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 
-import 'x509_certificate/x509_certificate.dart';
-import 'x509_certificate/asn1_distinguished_names.dart';
-
-import 'in_app_webview/webview.dart';
-import 'in_app_webview/in_app_webview_controller.dart';
-import 'http_auth_credentials_database.dart';
 import 'cookie_manager.dart';
-import 'web_storage/web_storage.dart';
+import 'http_auth_credentials_database.dart';
+import 'in_app_webview/in_app_webview_controller.dart';
+import 'in_app_webview/webview.dart';
 import 'pull_to_refresh/pull_to_refresh_controller.dart';
 import 'pull_to_refresh/pull_to_refresh_options.dart';
 import 'util.dart';
-import 'web_message/web_message_listener.dart';
 import 'web_message/web_message_channel.dart';
+import 'web_message/web_message_listener.dart';
+import 'web_storage/web_storage.dart';
+import 'x509_certificate/asn1_distinguished_names.dart';
+import 'x509_certificate/x509_certificate.dart';
 
 ///This type represents a callback, added with [InAppWebViewController.addJavaScriptHandler], that listens to post messages sent from JavaScript.
 ///
@@ -6411,8 +6409,16 @@ class URLRequest {
     if (map == null) {
       return null;
     }
+
+    dynamic url;
+    if (map["url"].toString().startsWith("intent")) {
+      url = map["url"];
+    } else {
+      url = Uri.tryParse(map["url"]);
+    }
+
     return URLRequest(
-      url: map["url"] != null ? Uri.tryParse(map["url"]) : null,
+      url: map["url"] != null ? url : null,
       headers: map["headers"]?.cast<String, String>(),
       method: map["method"],
       body: map["body"],
