@@ -6411,7 +6411,7 @@ class URLRequest {
     }
 
     dynamic url;
-    if (map["url"].toString().startsWith("intent")) {
+    if (map["url"].toString().startsWith("intent://")) {
       url = map["url"];
     } else {
       url = Uri.tryParse(map["url"]);
