@@ -6411,14 +6411,16 @@ class URLRequest {
     }
 
     dynamic url;
-    if (map["url"].toString().startsWith("intent://")) {
+
+    if (map["url"] != null && map["url"].toString().startsWith("intent://")) {
+      //v3 app intent data parsing issue
       url = map["url"];
     } else {
-      url = Uri.tryParse(map["url"]);
+      url = map["url"] != null ? Uri.tryParse(map["url"]) : null;
     }
 
     return URLRequest(
-      url: map["url"] != null ? url : null,
+      url: url,
       headers: map["headers"]?.cast<String, String>(),
       method: map["method"],
       body: map["body"],
