@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -6411,8 +6412,9 @@ class URLRequest {
     }
 
     dynamic url;
-
-    if (map["url"] != null && map["url"].toString().startsWith("intent://")) {
+    if (Platform.isAndroid &&
+        map["url"] != null &&
+        map["url"].toString().startsWith("intent://")) {
       //v3 app intent data parsing issue
       url = map["url"];
     } else {
