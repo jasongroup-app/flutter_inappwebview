@@ -6412,13 +6412,12 @@ class URLRequest {
     }
 
     dynamic url;
-    if (Platform.isAndroid &&
-        map["url"] != null &&
-        map["url"].toString().startsWith("intent://")) {
-      //v3 app intent data parsing issue
-      url = map["url"];
-    } else {
-      url = map["url"] != null ? Uri.tryParse(map["url"]) : null;
+    if (map["url"] != null) {
+      if (Uri.tryParse(map["url"]) == null) {
+        url = map["url"];
+      } else {
+        url = Uri.tryParse(map["url"]);
+      }
     }
 
     return URLRequest(
