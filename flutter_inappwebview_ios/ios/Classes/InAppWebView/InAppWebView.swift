@@ -589,6 +589,10 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
         configuration.userContentController.add(self, name: "onWebMessagePortMessageReceived")
         configuration.userContentController.removeScriptMessageHandler(forName: "onWebMessageListenerPostMessageReceived")
         configuration.userContentController.add(self, name: "onWebMessageListenerPostMessageReceived")
+        // [Jason] >>
+        configuration.userContentController.removeScriptMessageHandler(forName: "Native")
+        configuration.userContentController.add(self, name: "Native")
+        // <<
         configuration.userContentController.addUserOnlyScripts(initialUserScripts)
         configuration.userContentController.sync(scriptMessageHandler: self)
     }
@@ -2945,6 +2949,14 @@ if(window.\(JAVASCRIPT_BRIDGE_NAME)[\(_callHandlerID)] != null) {
                 webMessageListener.channelDelegate?.onPostMessage(message: webMessage, sourceOrigin: sourceOrigin, isMainFrame: isMainFrame)
             }
         }
+        // [Jason] >>
+        else if message.name == "Native" {
+            let body = message.body as! [String: Any?]
+            let data = try? JSONSerialization.data(withJSONObject: body)
+            let args = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)! as String
+            self.channelDelegate?.onConsoleMessage(message: args, messageLevel: 999)
+        }
+        // <<
     }
     
     public func scrollTo(x: Int, y: Int, animated: Bool) {

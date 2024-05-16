@@ -22,6 +22,9 @@ class ConsoleMessageLevel {
   ///Console ERROR level
   static const ERROR = ConsoleMessageLevel._internal(3, 3);
 
+  ///Console JASON level
+  static const JASON = ConsoleMessageLevel._internal(999, 999);
+
   ///Console LOG level
   static const LOG = ConsoleMessageLevel._internal(1, 1);
 
@@ -35,6 +38,7 @@ class ConsoleMessageLevel {
   static final Set<ConsoleMessageLevel> values = [
     ConsoleMessageLevel.DEBUG,
     ConsoleMessageLevel.ERROR,
+    ConsoleMessageLevel.JASON,
     ConsoleMessageLevel.LOG,
     ConsoleMessageLevel.TIP,
     ConsoleMessageLevel.WARNING,
@@ -85,6 +89,8 @@ class ConsoleMessageLevel {
         return 'DEBUG';
       case 3:
         return 'ERROR';
+      case 999:
+        return 'JASON';
       case 1:
         return 'LOG';
       case 0:

@@ -23,4 +23,7 @@ class ConsoleMessageLevel_ {
 
   ///Console DEBUG level
   static const DEBUG = const ConsoleMessageLevel_._internal(4);
+
+  ///Console JASON level
+  static const JASON = const ConsoleMessageLevel_._internal(999);
 }

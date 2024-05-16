@@ -18,6 +18,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+// [Jason] >>
+import java.util.HashMap;
+import java.util.Map;
+// <<
+
 public class JavaScriptBridgeInterface {
   private static final String LOG_TAG = "JSBridgeInterface";
   private InAppWebView inAppWebView;
@@ -25,6 +30,29 @@ public class JavaScriptBridgeInterface {
   public JavaScriptBridgeInterface(InAppWebView inAppWebView) {
     this.inAppWebView = inAppWebView;
   }
+
+  // [Jason] >>
+  @JavascriptInterface
+  public void onJsResponse(final String type, final String msg) {
+    if (inAppWebView == null) {
+      return;
+    }
+
+    final Handler handler = new Handler(inAppWebView.getWebViewLooper());
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        if (inAppWebView != null && inAppWebView.channelDelegate != null) {
+          final Map<String, Object> obj = new HashMap<>();
+          obj.put("type", type);
+          obj.put("msg", msg);
+          JSONObject json = new JSONObject(obj);
+          inAppWebView.channelDelegate.onConsoleMessage(json.toString(), 999);
+        }
+      }
+    });
+  }
+  // <<
 
   @JavascriptInterface
   public void _hideContextMenu() {

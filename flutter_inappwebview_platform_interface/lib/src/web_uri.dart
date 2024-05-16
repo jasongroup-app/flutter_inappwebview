@@ -47,8 +47,33 @@ class WebUri implements Uri {
   WebUri(String source, {this.forceToStringRawValue = false}) {
     _rawValue = source;
     try {
-      _uri = Uri.parse(this._rawValue);
+      // _uri = Uri.parse(this._rawValue);
+      // _isValidUri = true;
+
+      // [Jason] >>
+      try {
+        _uri = Uri.parse(_rawValue);
+      } catch (e) {
+        List<String> splitUrl =
+            _rawValue.replaceFirst(RegExp(r'://'), ' ').split(' ');
+        String scheme = splitUrl[0];
+        List<String> intentUrl = splitUrl[1].split('#Intent;');
+        String host = intentUrl[0];
+
+        if (host.contains(':')) {
+          host = host.replaceAll(RegExp(r':'), '%3A');
+        }
+
+        _rawValue = '$scheme://$host';
+        if (intentUrl.length == 2) {
+          _rawValue += '#Intent;${intentUrl[1]}';
+        }
+
+        _uri = Uri.parse(_rawValue);
+      }
+
       _isValidUri = true;
+      // <<
     } catch (e, stacktrace) {
       print(e);
       print(stacktrace);
