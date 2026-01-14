@@ -645,6 +645,10 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                 }
             }
         }
+        // [Jason] >>
+        configuration.userContentController.removeScriptMessageHandler(forName: "Native")
+        configuration.userContentController.add(self, name: "Native")
+        // <<
         configuration.userContentController.addUserOnlyScripts(initialUserScripts)
         configuration.userContentController.sync(scriptMessageHandler: self)
     }
@@ -3142,6 +3146,14 @@ if(window.\(JavaScriptBridgeJS.get_JAVASCRIPT_BRIDGE_NAME())[\(_callHandlerID)] 
                 channelDelegate.onCallJsHandler(handlerName: handlerName, data: data, callback: callback)
             }
         }
+        // [Jason] >>
+        else if message.name == "Native" {
+            let body = message.body as! [String: Any?]
+            let data = try? JSONSerialization.data(withJSONObject: body)
+            let args = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)! as String
+            self.channelDelegate?.onConsoleMessage(message: args, messageLevel: 999)
+        }
+        // <<
     }
     
     public func scrollTo(x: Int, y: Int, animated: Bool) {

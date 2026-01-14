@@ -11,7 +11,10 @@ import java.util.Set;
 
 public class JavaScriptBridgeJS {
   @NonNull
-  private static String _JAVASCRIPT_BRIDGE_NAME = "flutter_inappwebview";
+  // private static String _JAVASCRIPT_BRIDGE_NAME = "flutter_inappwebview";
+  // [Jason] >>
+  private static String _JAVASCRIPT_BRIDGE_NAME = "Native";
+  // <<
 
   public static void set_JAVASCRIPT_BRIDGE_NAME(@NonNull String bridgeName) {
     _JAVASCRIPT_BRIDGE_NAME = bridgeName;
